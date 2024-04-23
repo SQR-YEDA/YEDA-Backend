@@ -16,12 +16,16 @@ def get_repository() -> Repository:
         yield repository
 
 
-def get_use_case(repository: Annotated[Repository, Depends(get_repository)]) -> UseCase:
+def get_use_case(
+        repository: Annotated[Repository, Depends(get_repository)]
+) -> UseCase:
     return UseCase(repository)
 
 
 def get_current_user(
-        credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_security)],
+        credentials: Annotated[
+            HTTPAuthorizationCredentials, Depends(bearer_security)
+        ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ) -> uuid.UUID | None:
     if credentials is None:

@@ -43,7 +43,9 @@ class CreateElementRequest(BaseModel):
 @tier_list_router.post("/elements")
 def create_element(
         request: CreateElementRequest,
-        current_user_id: Annotated[uuid.UUID | None, Depends(get_current_user)],
+        current_user_id: Annotated[
+            uuid.UUID | None, Depends(get_current_user)
+        ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ):
     if current_user_id is None:
@@ -72,7 +74,9 @@ class GetTierListResponse(BaseModel):
 
 @tier_list_router.get("/tier-list")
 def get_user_tier_list(
-        current_user_id: Annotated[uuid.UUID | None, Depends(get_current_user)],
+        current_user_id: Annotated[
+            uuid.UUID | None, Depends(get_current_user)
+        ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ) -> GetTierListResponse:
     if current_user_id is None:
@@ -110,7 +114,9 @@ class UpdateTierListRequest(BaseModel):
 @tier_list_router.put("/tier-list")
 def update_user_tier_list(
         request: UpdateTierListRequest,
-        current_user_id: Annotated[uuid.UUID | None, Depends(get_current_user)],
+        current_user_id: Annotated[
+            uuid.UUID | None, Depends(get_current_user)
+        ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ):
     if current_user_id is None:
@@ -152,11 +158,15 @@ def register_user(
 ) -> RegisterUserResponse:
     try:
         res = use_case.register_user(
-            usecases.RegisterUserRequest(login=request.login, password=request.password)
+            usecases.RegisterUserRequest(
+                login=request.login, password=request.password
+            )
         )
     except ValueError:
         raise HTTPException(status_code=400, detail="Login is already taken")
-    return RegisterUserResponse(tokens=Tokens(access_token=res.tokens.access_token))
+    return RegisterUserResponse(
+        tokens=Tokens(access_token=res.tokens.access_token)
+    )
 
 
 class LoginUserRequest(BaseModel):
@@ -175,11 +185,16 @@ def login_user(
 ) -> LoginUserResponse:
     try:
         res = use_case.login_user(
-            usecases.LoginUserRequest(login=request.login, password=request.password)
+            usecases.LoginUserRequest(login=request.login,
+                                      password=request.password)
         )
     except ValueError:
-        raise HTTPException(status_code=401, detail="Incorrect login or password")
-    return LoginUserResponse(tokens=Tokens(access_token=res.tokens.access_token))
+        raise HTTPException(
+            status_code=401, detail="Incorrect login or password"
+        )
+    return LoginUserResponse(
+        tokens=Tokens(access_token=res.tokens.access_token)
+    )
 
 
 def get_app():

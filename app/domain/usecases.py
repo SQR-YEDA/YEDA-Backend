@@ -99,7 +99,9 @@ class UseCase:
     def __init__(self, repository: Repository):
         self.repository = repository
 
-    def register_user(self, request: RegisterUserRequest) -> RegisterUserResponse:
+    def register_user(
+            self, request: RegisterUserRequest
+    ) -> RegisterUserResponse:
         login_user = self.repository.get_user_by_login(request.login)
         if login_user is not None:
             raise ValueError("Login is already taken")
@@ -116,7 +118,9 @@ class UseCase:
             categories=[]
         )
         self.repository.create_tier_list(tier_list)
-        return RegisterUserResponse(tokens=Tokens(access_token=create_access_token(user.id)))
+        return RegisterUserResponse(
+            tokens=Tokens(access_token=create_access_token(user.id))
+        )
 
     def login_user(self, request: LoginUserRequest) -> LoginUserResponse:
         user = self.repository.get_user_by_login(request.login)
@@ -124,9 +128,13 @@ class UseCase:
             raise ValueError("User not found")
         if not compare_passwords(request.password, user.password_hash):
             raise ValueError("Invalid password")
-        return LoginUserResponse(tokens=Tokens(access_token=create_access_token(user.id)))
+        return LoginUserResponse(
+            tokens=Tokens(access_token=create_access_token(user.id))
+        )
 
-    def authenticate_via_access_token(self, access_token: str) -> uuid.UUID | None:
+    def authenticate_via_access_token(
+            self, access_token: str
+    ) -> uuid.UUID | None:
         user_id = get_user_from_access_token(access_token)
         user = self.repository.get_user(user_id)
         if user is None:
@@ -152,7 +160,9 @@ class UseCase:
         )
         self.repository.add_element(element)
 
-    def get_user_tier_list(self, request: GetUserTierListRequest) -> GetUserTierListResponse:
+    def get_user_tier_list(
+            self, request: GetUserTierListRequest
+    ) -> GetUserTierListResponse:
         def get_element(element_id: uuid.UUID) -> Element:
             element = self.repository.get_element(element_id)
             return Element(
@@ -207,13 +217,17 @@ def compare_passwords(password: str, password_hash: str) -> bool:
 
 
 def create_access_token(user_id: uuid.UUID) -> str:
-    return jwt.encode({"user_id": str(user_id)}, config.jwt_secret_key, algorithm="HS256")
+    return jwt.encode(
+        {"user_id": str(user_id)}, config.jwt_secret_key, algorithm="HS256"
+    )
 
 
 def get_user_from_access_token(access_token: str) -> uuid.UUID | None:
     access_token_bytes = access_token.encode("utf-8")
     try:
-        payload = jwt.decode(access_token_bytes, config.jwt_secret_key, algorithms=["HS256"])
+        payload = jwt.decode(
+            access_token_bytes, config.jwt_secret_key, algorithms=["HS256"]
+        )
     except jwt.PyJWTError:
         return None
     return uuid.UUID(payload["user_id"])

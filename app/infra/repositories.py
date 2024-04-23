@@ -2,7 +2,8 @@ import uuid
 from typing import List
 
 from sqlalchemy import types, ForeignKey, create_engine, select, delete
-from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
+from sqlalchemy.orm import (Session, DeclarativeBase, Mapped,
+                            mapped_column, relationship, sessionmaker)
 
 from app.domain import models
 
@@ -74,26 +75,34 @@ class Repository:
         stmt = (select(TierList)
                 .where(TierList.user_id == str(user_id)))
         repo_tier_lists = self.session.scalars(stmt).all()
-        return [_repo_to_model_tier_list(repo_tier_list) for repo_tier_list in repo_tier_lists]
+        return [_repo_to_model_tier_list(repo_tier_list)
+                for repo_tier_list in repo_tier_lists]
 
     def create_tier_list(self, tier_list: models.TierList):
         repo_tier_list = _model_to_repo_tier_list(tier_list)
         self.session.add(repo_tier_list)
 
-    def update_tier_list(self, tier_list_id: uuid.UUID, tier_list: models.TierList):
+    def update_tier_list(
+            self, tier_list_id: uuid.UUID, tier_list: models.TierList
+    ):
         repo_tier_list = _model_to_repo_tier_list(tier_list)
         repo_tier_list.id = str(tier_list_id)
 
         select_repo_tl_categories_stmt = (
-            select(TierListCategory).where(TierListCategory.tier_list_id == str(tier_list_id)))
-        repo_tl_categories = self.session.scalars(select_repo_tl_categories_stmt).all()
+            select(TierListCategory)
+            .where(TierListCategory.tier_list_id == str(tier_list_id)))
+        repo_tl_categories = (self.session
+                              .scalars(select_repo_tl_categories_stmt).all())
 
-        delete_repo_tl_elements_stmt = (delete(TierListElement).where(TierListElement.tier_list_category_id.in_(
-            [category.id for category in repo_tl_categories]
-        )))
+        delete_repo_tl_elements_stmt = (
+            delete(TierListElement)
+            .where(TierListElement.tier_list_category_id
+                   .in_([category.id for category in repo_tl_categories]
+                        )))
         self.session.execute(delete_repo_tl_elements_stmt)
         delete_repo_tl_categories_stmt = (
-            delete(TierListCategory).where(TierListCategory.tier_list_id == str(tier_list_id)))
+            delete(TierListCategory)
+            .where(TierListCategory.tier_list_id == str(tier_list_id)))
         self.session.execute(delete_repo_tl_categories_stmt)
 
         self.session.merge(repo_tier_list)
@@ -115,21 +124,29 @@ class TierList(Base):
     __tablename__ = 'tier_lists'
 
     id: Mapped[str] = mapped_column(types.String, primary_key=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey('users.id'), nullable=False
+    )
     name: Mapped[str] = mapped_column(types.String, nullable=False)
 
-    categories: Mapped[List['TierListCategory']] = relationship(order_by='TierListCategory.number')
+    categories: Mapped[List['TierListCategory']] = relationship(
+        order_by='TierListCategory.number'
+    )
 
 
 class TierListCategory(Base):
     __tablename__ = 'tier_list_categories'
 
     id: Mapped[str] = mapped_column(types.String, primary_key=True)
-    tier_list_id: Mapped[str] = mapped_column(ForeignKey('tier_lists.id'), nullable=False)
+    tier_list_id: Mapped[str] = mapped_column(
+        ForeignKey('tier_lists.id'), nullable=False
+    )
     number: Mapped[int] = mapped_column(types.Integer, nullable=False)
     name: Mapped[str] = mapped_column(types.String, nullable=False)
 
-    elements: Mapped[List['TierListElement']] = relationship(order_by='TierListElement.number')
+    elements: Mapped[List['TierListElement']] = relationship(
+        order_by='TierListElement.number'
+    )
 
 
 class Element(Base):
@@ -143,9 +160,13 @@ class Element(Base):
 class TierListElement(Base):
     __tablename__ = 'tier_list_elements'
 
-    tier_list_category_id: Mapped[str] = mapped_column(ForeignKey('tier_list_categories.id'), primary_key=True)
+    tier_list_category_id: Mapped[str] = mapped_column(
+        ForeignKey('tier_list_categories.id'), primary_key=True
+    )
     number: Mapped[int] = mapped_column(types.Integer, primary_key=True)
-    element_id: Mapped[str] = mapped_column(ForeignKey('elements.id'), primary_key=True)
+    element_id: Mapped[str] = mapped_column(
+        ForeignKey('elements.id'), primary_key=True
+    )
 
 
 def _repo_to_model_tier_list(repo_tier_list: TierList) -> models.TierList:
@@ -167,7 +188,10 @@ def _repo_to_model_tier_list(repo_tier_list: TierList) -> models.TierList:
 
 
 def _model_to_repo_tier_list(model_tier_list: models.TierList) -> TierList:
-    def get_repo_category(category: models.TierListCategory, tier_list_id: uuid.UUID, number: int) -> TierListCategory:
+    def get_repo_category(
+            category: models.TierListCategory,
+            tier_list_id: uuid.UUID, number: int
+    ) -> TierListCategory:
         category_id = str(uuid.uuid4())
         return TierListCategory(
             id=category_id,

@@ -42,5 +42,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install dependencies
         run: poetry install
+      - name: Run flake8
+        run: poetry run flake8 .
       - name: Run bandit
         run: poetry run bandit -r .
