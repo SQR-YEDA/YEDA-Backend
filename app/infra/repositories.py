@@ -178,7 +178,7 @@ def _repo_to_model_tier_list(repo_tier_list: TierList) -> models.TierList:
             models.TierListCategory(
                 name=repo_category.name,
                 element_ids=[
-                    repo_element.element_id
+                    uuid.UUID(repo_element.element_id)
                     for repo_element in repo_category.elements
                 ]
             )
@@ -235,12 +235,12 @@ class UnitOfWork:
         self.session.close()
 
 
-def setup_unit_of_work() -> UnitOfWork:
-    url = 'sqlite:///database.db'
+def setup_unit_of_work(filename: str) -> UnitOfWork:
+    url = f'sqlite:///{filename}'
     engine = create_engine(url)
     Base.metadata.create_all(engine)
     session_maker = sessionmaker(bind=engine)
     return UnitOfWork(session_maker)
 
 
-uow = setup_unit_of_work()
+uow = setup_unit_of_work("database.db")
