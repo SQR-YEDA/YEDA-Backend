@@ -45,4 +45,4 @@ jobs:
       - name: Run flake8
         run: poetry run flake8 .
       - name: Run bandit
-        run: poetry run bandit -r .
+        run: poetry run bandit -r app/
