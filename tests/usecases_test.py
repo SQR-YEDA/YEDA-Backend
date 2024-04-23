@@ -4,7 +4,7 @@ import pytest
 
 from app.domain import usecases
 from app.infra.repositories import setup_unit_of_work
-from app.presentation.fastapi.app import UpdateTierList, UpdateTierListCategory, GetTierList, GetTierListCategory
+from app.presentation.fastapi.app import UpdateTierList, UpdateTierListCategory
 
 
 @pytest.fixture
@@ -77,7 +77,9 @@ def test_elements_and_update_tier_list(use_case, user_id):
         ]
     )
     use_case.update_user_tier_list(
-        usecases.UpdateTierListRequest(user_id=user_id, update_tier_list=update_tier_list)
+        usecases.UpdateTierListRequest(
+            user_id=user_id, update_tier_list=update_tier_list
+        )
     )
 
     tier_list = use_case.get_user_tier_list(

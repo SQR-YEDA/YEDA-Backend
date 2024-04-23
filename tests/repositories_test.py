@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 
-from app.domain import usecases, models
+from app.domain import models
 from app.infra.repositories import setup_unit_of_work
 
 
