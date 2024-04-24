@@ -16,6 +16,7 @@ bandit = "^1.7.8"
 pytest = "^8.1.1"
 flake8 = "^7.0.0"
 pytest-cov = "^5.0.0"
+py-bcrypt = "^0.4"
 
 
 [build-system]

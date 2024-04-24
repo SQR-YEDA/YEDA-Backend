@@ -2,6 +2,7 @@ import uuid
 from dataclasses import dataclass
 
 import jwt
+import bcrypt
 
 from app.config import config
 from app.domain import models
@@ -209,11 +210,12 @@ class UseCase:
 
 
 def hash_password(password: str) -> str:
-    return password
+    pw_hash = bcrypt.hashpw(password, bcrypt.gensalt())
+    return pw_hash
 
 
 def compare_passwords(password: str, password_hash: str) -> bool:
-    return password == password_hash
+    return bcrypt.checkpw(password, password_hash)
 
 
 def create_access_token(user_id: uuid.UUID) -> str:

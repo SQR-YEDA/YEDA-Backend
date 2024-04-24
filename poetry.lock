@@ -367,6 +367,16 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "py-bcrypt"
+version = "0.4"
+description = "bcrypt password hashing and key derivation"
+optional = false
+python-versions = "*"
+files = [
+    {file = "py-bcrypt-0.4.tar.gz", hash = "sha256:5fa13bce551468350d66c4883694850570f3da28d6866bb638ba44fe5eabda78"},
+]
+
+[[package]]
 name = "pycodestyle"
 version = "2.11.1"
 description = "Python style guide checker"
@@ -840,4 +850,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "83f15cccafb455f55b6584ee802744e103e89a076971e11aa48c1fa80febeb38"
+content-hash = "cbf8f6b183171ba6af5ca8a18d9da248521149a2586e48c14c16d8efacdafdbe"
