@@ -7,16 +7,22 @@ from pydantic import BaseModel
 from app.domain import usecases
 from app.presentation.fastapi.deps import get_use_case, get_current_user
 
-tier_list_router = APIRouter(tags=["tier-list"])
+tier_list_router = APIRouter(tags=["TierList"])
 
 
 class Element(BaseModel):
+    """
+    Represents an element in a tier list.
+    """
     id: uuid.UUID
     name: str
     calories: int
 
 
 class GetElementsResponse(BaseModel):
+    """
+    Response model for fetching elements.
+    """
     elements: list[Element]
 
 
@@ -25,6 +31,9 @@ def get_elements(
         current_user: Annotated[uuid.UUID | None, Depends(get_current_user)],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ) -> GetElementsResponse:
+    """
+    Retrieve elements from the tier list.
+    """
     if current_user is None:
         raise HTTPException(status_code=403, detail="Forbidden")
     res = use_case.get_elements()
@@ -36,6 +45,9 @@ def get_elements(
 
 
 class CreateElementRequest(BaseModel):
+    """
+    Request model for creating a new element.
+    """
     name: str
     calories: int
 
@@ -48,6 +60,9 @@ def create_element(
         ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ):
+    """
+    Create a new element.
+    """
     if current_user_id is None:
         raise HTTPException(status_code=403, detail="Forbidden")
     use_case.create_element(
@@ -59,16 +74,25 @@ def create_element(
 
 
 class GetTierListCategory(BaseModel):
+    """
+    Represents a category in a tier list.
+    """
     name: str
     elements: list[Element]
 
 
 class GetTierList(BaseModel):
+    """
+    Represents a tier list.
+    """
     name: str
     categories: list[GetTierListCategory]
 
 
 class GetTierListResponse(BaseModel):
+    """
+    Response model for fetching tier lists.
+    """
     tier_list: GetTierList
 
 
@@ -79,6 +103,9 @@ def get_user_tier_list(
         ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ) -> GetTierListResponse:
+    """
+    Retrieve the tier list of the current user.
+    """
     if current_user_id is None:
         raise HTTPException(status_code=403, detail="Forbidden")
     res = use_case.get_user_tier_list(
@@ -98,16 +125,25 @@ def get_user_tier_list(
 
 
 class UpdateTierListCategory(BaseModel):
+    """
+    Request model for updating a category in a tier list.
+    """
     name: str
     element_ids: list[uuid.UUID]
 
 
 class UpdateTierList(BaseModel):
+    """
+    Request model for updating a tier list.
+    """
     name: str
     categories: list[UpdateTierListCategory]
 
 
 class UpdateTierListRequest(BaseModel):
+    """
+    Request model for updating a tier list.
+    """
     update_tier_list: UpdateTierList
 
 
@@ -119,6 +155,9 @@ def update_user_tier_list(
         ],
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ):
+    """
+    Update the tier list of the current user.
+    """
     if current_user_id is None:
         raise HTTPException(status_code=403, detail="Forbidden")
     use_case.update_user_tier_list(
@@ -135,19 +174,28 @@ def update_user_tier_list(
     )
 
 
-auth_router = APIRouter(tags=["auth"])
+auth_router = APIRouter(tags=["Auth"])
 
 
 class Tokens(BaseModel):
+    """
+    Represents authentication tokens.
+    """
     access_token: str
 
 
 class RegisterUserRequest(BaseModel):
+    """
+    Request model for registering a new user.
+    """
     login: str
     password: str
 
 
 class RegisterUserResponse(BaseModel):
+    """
+    Response model for registering a new user.
+    """
     tokens: Tokens
 
 
@@ -156,6 +204,9 @@ def register_user(
         request: RegisterUserRequest,
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)],
 ) -> RegisterUserResponse:
+    """
+    Register a new user.
+    """
     try:
         res = use_case.register_user(
             usecases.RegisterUserRequest(
@@ -170,11 +221,17 @@ def register_user(
 
 
 class LoginUserRequest(BaseModel):
+    """
+    Request model for logging in a user.
+    """
     login: str
     password: str
 
 
 class LoginUserResponse(BaseModel):
+    """
+    Response model for logging in a user.
+    """
     tokens: Tokens
 
 
@@ -183,6 +240,9 @@ def login_user(
         request: LoginUserRequest,
         use_case: Annotated[usecases.UseCase, Depends(get_use_case)]
 ) -> LoginUserResponse:
+    """
+    Log in a user.
+    """
     try:
         res = use_case.login_user(
             usecases.LoginUserRequest(login=request.login,
