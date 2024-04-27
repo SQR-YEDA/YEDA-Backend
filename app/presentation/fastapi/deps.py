@@ -1,3 +1,4 @@
+import typing
 import uuid
 from typing import Annotated
 
@@ -11,7 +12,7 @@ from app.infra.repositories import uow, Repository
 bearer_security = HTTPBearer(auto_error=False)
 
 
-def get_repository() -> Repository:
+def get_repository() -> typing.Generator[Repository, None, None]:
     with uow as repository:
         yield repository
 
