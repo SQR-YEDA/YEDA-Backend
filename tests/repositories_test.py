@@ -89,7 +89,6 @@ def test_tier_list(repository, user_id):
     )
     assert len(tier_lists) == 1
     tier_list = tier_lists[0]
-    assert tier_list.id == tier_list.id
     assert tier_list.user_id == user_id
     assert tier_list.name == "New Tier List"
     assert len(tier_lists[0].categories) == 1
