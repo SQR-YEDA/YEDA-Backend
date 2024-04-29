@@ -29,5 +29,9 @@ class OpenAPIUser(HttpUser):
             "password": "string"
         }
         response = self.client.post("/login", json=payload, headers=headers)
-        headers["Authorization"] = f"Bearer {response.json()['tokens']['access_token']}"
-        self.headers = {"Authorization": f"Bearer {response.json()['tokens']['access_token']}"}
+        headers["Authorization"] = \
+            f"Bearer {response.json()['tokens']['access_token']}"
+        self.headers = {
+            "Authorization":
+                f"Bearer {response.json()['tokens']['access_token']}"
+        }
